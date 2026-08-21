@@ -78,6 +78,22 @@ Classify each task before dispatching. Use the highest applicable level.
 
 The final whole-branch review runs once after all tasks. Use `worker` for an all-low branch, `reviewer` for medium, and `architect` for high. Do not run a broad review after every task.
 
+### Route Manifest
+
+Before a cluster starts, record one closed route manifest entry with: included
+task IDs, risk and its observable criterion, permitted routes, selected route
+and reason, explicit fork mode, review allowance, and first expected artifact.
+The permitted implementation routes are `direct-controller`, `fast-worker`,
+`worker`, and `architect`; `explorer` is read-only and `reviewer` is review-only.
+If the platform cannot select a named profile, record `platform-fallback`
+separately instead of inventing a route. A route not present in this closed
+list requires a scope decision before dispatch.
+
+Before briefing work, name every affected boundary: executable, CLI command,
+package, persistence, public contract, security, data, and verification
+subsystem. Each affected boundary must already be authorized by the accepted
+contract or by a recorded intake decision.
+
 ### Operating Constraints
 
 - State the risk classification and the criterion that selected it in the task ledger before dispatching.
@@ -136,6 +152,24 @@ The accepted task contract is its brief, binding global constraints, accepted ar
 - A useful hardening idea, broader coverage, adjacent refactor, or new edge case outside that contract is a **Follow-up**, not a blocker. Record it in the ledger or route it through `phase-change-intake`; do not reopen the current task for it.
 - If fixing a genuine blocker changes the accepted contract, threat model, or task boundary, stop the review loop. Create a change-intake/architecture decision, update the task scope, then resume with one new bounded implementation route. Do not smuggle a redesign into repeated fix waves.
 - Run an architecture gate once for the accepted High-risk contract. Re-run it only when the contract or threat model changes, never solely because a reviewer proposes additional hardening.
+
+### Scope Admission Gate
+
+A finding from the controller, worker, reviewer, architect, test, tool, or human
+is a proposal until it is admitted. Before it changes the current cluster,
+classify it against the accepted task contract and the boundary list in the
+route manifest:
+
+- An in-contract correction may enter the current cluster with its exact
+  acceptance evidence recorded.
+- A finding that changes an executable, CLI command, package, persistence,
+  public contract, security, data, or verification subsystem goes through
+  `phase-change-intake` before any plan, brief, test, or implementation expands.
+- A useful but non-blocking idea remains a Follow-up; it does not create an
+  implicit work item or another review loop.
+
+Admission changes the manifest and brief before work resumes. Merely naming a
+finding Critical or Important does not admit it.
 
 ## Clustered Execution and Review Units
 

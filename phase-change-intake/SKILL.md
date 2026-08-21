@@ -5,13 +5,17 @@ description: Triage new ideas, fixes, scope changes, architecture notes, data co
 
 # Phase Change Intake
 
-Use this skill when new human feedback appears during an active phase and could alter scope, priorities, architecture, documentation, data contracts, or verification.
+Use this skill when a finding from the controller, worker, reviewer, architect,
+test, tool, or human appears during an active phase and could alter scope,
+priorities, architecture, documentation, data contracts, or verification.
+The source does not grant authority: every such finding remains a proposal
+until this intake admits, defers, rejects, or routes it.
 
 Phase intake preserves the relationship between planning and specs: phases decide whether and when a change enters the roadmap; OpenSpec records product behavior, acceptance criteria, data contracts, and implementation tasks.
 
 ## Workflow
 
-1. Restate the new idea in one sentence.
+1. Restate the new idea in one sentence and record its source.
 2. Classify it as one or more types: `bug_fix`, `scope_refinement`, `new_feature`, `architecture_change`, `data_contract_change`, `verification_change`, `documentation_change`, or `out_of_scope`.
 3. Check impact against the current phase goal, active work item, `openspec/specs/` accepted requirements, active `openspec/changes/<change-id>/` deltas, architecture boundaries, data contracts, verification evidence, privacy, safety, and deployment rules.
 4. Choose exactly one routing decision: `adopt_now`, `queue_current_phase`, `create_openspec_change`, `defer`, or `reject`.

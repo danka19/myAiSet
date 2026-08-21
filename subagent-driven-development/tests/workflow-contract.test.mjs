@@ -41,3 +41,13 @@ test("subagent-driven-development alone owns risk and task-review routing", asyn
   );
   assert.match(review, /subagent-driven-development.*owns.*task.*review/is);
 });
+
+test("scope admission covers findings from every source", async () => {
+  const sdd = await skill("subagent-driven-development");
+  const intake = await skill("phase-change-intake");
+  const everySource = /controller.*worker.*reviewer.*architect.*test.*tool.*human/is;
+
+  assert.match(sdd, /### Scope Admission Gate/);
+  assert.match(sdd, everySource);
+  assert.match(intake, everySource);
+});
