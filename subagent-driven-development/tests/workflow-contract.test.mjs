@@ -51,3 +51,10 @@ test("scope admission covers findings from every source", async () => {
   assert.match(sdd, everySource);
   assert.match(intake, everySource);
 });
+
+test("brainstorming has a closed non-design fast lane", async () => {
+  const text = await skill("brainstorming");
+  assert.match(text, /### Closed Fast Lane/);
+  assert.match(text, /accepted spec or approved implementation plan/i);
+  assert.match(text, /public contract.*security.*data.*architecture.*UX/is);
+});

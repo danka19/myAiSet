@@ -9,17 +9,40 @@ Help turn ideas into fully formed designs and specs through natural collaborativ
 
 Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design and get user approval.
 
+### Closed Fast Lane
+
+Skip the design dialogue only when **every** condition below is proven from the
+request and current artifacts:
+
+- An accepted spec or approved implementation plan already defines the work,
+  or the user supplied an exact corrective instruction.
+- The work introduces no new public contract, security, data, architecture, or
+  UX decision and does not reinterpret an accepted one.
+- Exact acceptance evidence is already named.
+- The change is locally reversible within the authorized files.
+- No ambiguity remains that requires a human decision.
+
+Record the qualifying evidence briefly, then proceed to the applicable
+planning or execution skill. If any condition fails, use the complete design
+flow below. High-risk work never qualifies for this fast lane.
+
 <HARD-GATE>
-Do NOT invoke any implementation skill, write any code, scaffold any project, or take any implementation action until you have presented a design and the user has approved it. This applies to EVERY project regardless of perceived simplicity.
+Unless the Closed Fast Lane qualifies, do NOT invoke any implementation skill,
+write any code, scaffold any project, or take any implementation action until
+you have presented a design and the user has approved it.
 </HARD-GATE>
 
 ## Anti-Pattern: "This Is Too Simple To Need A Design"
 
-Every project goes through this process. A todo list, a single-function utility, a config change — all of them. "Simple" projects are where unexamined assumptions cause the most wasted work. The design can be short (a few sentences for truly simple projects), but you MUST present it and get approval.
+Perceived simplicity is not a fast-lane criterion. A todo list, a
+single-function utility, or a config change uses the complete process unless
+all closed conditions above have evidence. When the process applies, the
+design can be short, but it still requires approval.
 
 ## Checklist
 
-You MUST create a task for each of these items and complete them in order:
+When the Closed Fast Lane does not qualify, create a task for each of these
+items and complete them in order:
 
 1. **Explore project context** — check files, docs, recent commits
 2. **Offer the visual companion just-in-time** — NOT upfront. The first time a question would genuinely be clearer shown than described, offer it then (its own message); on approval its browser tab opens for you. If no visual question ever arises, never offer it. See the Visual Companion section below.
