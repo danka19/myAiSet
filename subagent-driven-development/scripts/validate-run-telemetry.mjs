@@ -18,9 +18,7 @@ function cumulativeTokens(payload) {
   const usage = payload?.info?.total_token_usage;
   if (!usage || typeof usage !== "object") return null;
   if (Number.isFinite(usage.total_tokens)) return usage.total_tokens;
-  const input = Number(usage.input_tokens ?? 0);
-  const output = Number(usage.output_tokens ?? 0);
-  return Number.isFinite(input + output) ? input + output : null;
+  return null;
 }
 
 export function parseRolloutText(text) {
@@ -90,6 +88,7 @@ export function validateTelemetry(parsed, manifest) {
   const byRole = {};
   const byForkMode = {};
   const reviewLoops = {};
+  const followupsByTask = {};
   let agentsCreated = 0;
   let followups = 0;
   let waits = 0;
@@ -97,6 +96,30 @@ export function validateTelemetry(parsed, manifest) {
   for (const call of parsed.calls ?? []) {
     if (call.name === "followup_task") {
       followups += 1;
+      const args = call.args;
+      if (!args) continue;
+      const taskName = String(args.target ?? "").split("/").filter(Boolean).at(-1);
+      const route = routes.find((candidate) => candidate.taskName === taskName);
+      if (!route) {
+        violations.push(`${args.target ?? "unknown"}: unplanned followup target`);
+        continue;
+      }
+
+      increment(followupsByTask, taskName);
+      const allowance = Number.isInteger(route.maxFollowups) ? route.maxFollowups : 0;
+      if (followupsByTask[taskName] > allowance) {
+        violations.push(
+          `${taskName}: followups ${followupsByTask[taskName]} exceed allowance ${allowance}`,
+        );
+      }
+      if (route.role === "reviewer") {
+        increment(reviewLoops, taskName);
+        if (reviewLoops[taskName] > maxReviewLoops) {
+          violations.push(
+            `${taskName}: review loops ${reviewLoops[taskName]} exceed maximum ${maxReviewLoops}`,
+          );
+        }
+      }
       continue;
     }
     if (call.name === "wait_agent") {
@@ -128,10 +151,17 @@ export function validateTelemetry(parsed, manifest) {
       }
       if (/^[1-9]\d*$/.test(String(args.fork_turns))) {
         const exception = route.forkException;
+        const turnIds = Array.isArray(exception?.turns) ? exception.turns : [];
+        const validTurnIds = turnIds.every(
+          (turn) => (Number.isInteger(turn) && turn > 0)
+            || (typeof turn === "string" && turn.trim().length > 0),
+        );
+        const uniqueTurnIds = new Set(turnIds.map((turn) => String(turn))).size;
         if (
           !exception
-          || !Array.isArray(exception.turns)
-          || exception.turns.length !== Number(args.fork_turns)
+          || turnIds.length !== Number(args.fork_turns)
+          || !validTurnIds
+          || uniqueTurnIds !== turnIds.length
           || !String(exception.reason ?? "").trim()
         ) {
           violations.push(`${args.task_name}: positive fork mode lacks exact-turn justification`);
@@ -171,6 +201,7 @@ export function validateTelemetry(parsed, manifest) {
       byRole,
       byForkMode,
       followups,
+      followupsByTask,
       waits,
       reviewLoops,
       tokens: tokenMetrics,
