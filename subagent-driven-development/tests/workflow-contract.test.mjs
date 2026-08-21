@@ -58,3 +58,11 @@ test("brainstorming has a closed non-design fast lane", async () => {
   assert.match(text, /accepted spec or approved implementation plan/i);
   assert.match(text, /public contract.*security.*data.*architecture.*UX/is);
 });
+
+test("fresh verification is scoped to the exact claim", async () => {
+  const text = await skill("verification-before-completion");
+  assert.doesNotMatch(text, /Execute the FULL command/);
+  assert.match(text, /complete selected command/i);
+  assert.match(text, /exact claim/i);
+  assert.match(text, /project.*verification matrix/is);
+});

@@ -27,7 +27,7 @@ If you haven't run the verification command in this message, you cannot claim it
 BEFORE claiming any status or expressing satisfaction:
 
 1. IDENTIFY: What command proves this claim?
-2. RUN: Execute the FULL command (fresh, complete)
+2. RUN: Execute the complete selected command (fresh, complete) that proves the exact claim
 3. READ: Full output, check exit code, count failures
 4. VERIFY: Does output confirm the claim?
    - If NO: State actual status with evidence
@@ -36,6 +36,21 @@ BEFORE claiming any status or expressing satisfaction:
 
 Skip any step = lying, not verifying
 ```
+
+## Selecting Verification Scope
+
+The project's verification matrix owns command selection. Freshness and
+completeness apply to the selected command; they do not automatically widen a
+local claim into the broadest available suite.
+
+- A focused command may prove one work item's exact local claim when the
+  project matrix assigns that command to the change type.
+- A phase-complete, release-ready, or whole-project claim requires the full
+  gate named by the project matrix on the final code snapshot.
+- Never describe a focused result as proof of a broader claim. Never replace a
+  required full gate with several unrelated focused runs.
+- Re-run a full gate only after a later change invalidates its evidence under
+  the project matrix; freshness does not require duplicate unchanged runs.
 
 ## Common Failures
 
@@ -55,7 +70,7 @@ Skip any step = lying, not verifying
 - Expressing satisfaction before verification ("Great!", "Perfect!", "Done!", etc.)
 - About to commit/push/PR without verification
 - Trusting agent success reports
-- Relying on partial verification
+- Relying on verification narrower than the exact claim or project matrix
 - Thinking "just this once"
 - Tired and wanting work over
 - **ANY wording implying success without having run verification**
