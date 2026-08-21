@@ -7,7 +7,9 @@ description: Use when facing 2+ independent tasks that can be worked on without 
 
 ## Overview
 
-You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
+Follow `using-superpowers` → **Subagent Dispatch Contract** for every dispatch.
+This skill owns only the decision to parallelize independent problem domains
+and the domain-specific task shape below.
 
 When you have multiple unrelated failures (different test files, different subsystems, different bugs), investigating them sequentially wastes time. Each investigation is independent and can happen in parallel.
 
@@ -61,7 +63,8 @@ Each agent gets:
 - **Specific scope:** One test file or subsystem
 - **Clear goal:** Make these tests pass
 - **Constraints:** Don't change other code
-- **Expected output:** Summary of what you found and fixed
+- **Expected output:** The canonical inline fields plus a named report artifact
+  for detailed findings
 
 ### 3. Dispatch in Parallel
 

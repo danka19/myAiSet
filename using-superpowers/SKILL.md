@@ -43,6 +43,17 @@ If CLAUDE.md, GEMINI.md, or AGENTS.md says "don't use TDD" and a skill says "alw
 
 Skills speak in actions ("dispatch a subagent", "create a todo", "read a file") rather than naming any one runtime's tools. For per-platform tool equivalents and instructions-file conventions, see [claude-code-tools.md](references/claude-code-tools.md), [codex-tools.md](references/codex-tools.md), [copilot-tools.md](references/copilot-tools.md), [gemini-tools.md](references/gemini-tools.md), [pi-tools.md](references/pi-tools.md), and [antigravity-tools.md](references/antigravity-tools.md). Gemini CLI users get the tool mapping loaded automatically via GEMINI.md.
 
+## Subagent Dispatch Contract
+
+This section is the canonical cross-skill contract for subagent context.
+
+- Every ordinary dispatch explicitly sets `fork_turns: "none"`. Omitting `fork_turns` is prohibited, and `fork_turns: "all"` is prohibited.
+- A positive integer is allowed only when a preflight record names the exact
+  turns required and explains why a bounded brief cannot carry that decision.
+- The prompt contains one bounded task and the minimum binding context, or
+  paths to those artifacts. It never contains accumulated session history.
+- The inline result contains only status, artifact paths, verification summary, and blockers. Detailed findings, logs, and diffs go in the named artifact.
+
 # Using Skills
 
 ## The Rule

@@ -5,11 +5,19 @@ description: Use when executing implementation plans or OpenSpec change tasks wi
 
 # Subagent-Driven Development
 
-Execute a plan or OpenSpec change tasks by dispatching a fresh implementer per task, applying the risk-routed quality gate, and running one broad whole-branch review at the end.
+Execute a plan or OpenSpec change through risk-classified review clusters and
+one broad whole-branch review at the end.
 
-**Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
+**Context contract:** Follow `using-superpowers` → **Subagent Dispatch Contract**
+for every dispatch. This skill adds implementation-specific brief,
+report, review-package, and progress-ledger rules below.
 
-**Core principle:** Match execution and review depth to observable change risk. Fresh task context, targeted automated evidence, and one final branch review protect quality; additional agents are added only when their judgment is needed. For OpenSpec work, `openspec/changes/<change-id>/tasks.md` is a valid implementation plan.
+**Core principle:** Match execution and review depth to observable change risk.
+The implementation and review unit is a risk-classified cluster; atomic tasks
+retain separate acceptance evidence. Targeted automated evidence and one final
+branch review protect quality; additional agents are added only when their
+judgment is needed. For OpenSpec work,
+`openspec/changes/<change-id>/tasks.md` is a valid implementation plan.
 
 **Narration:** between tool calls, narrate at most one short line — the
 ledger and the tool results carry the record.
@@ -38,8 +46,8 @@ digraph when_to_use {
 
 **vs. Executing Plans (parallel session):**
 - Same session (no context switch)
-- Fresh subagent per task (no context pollution)
-- Risk-routed review per task, broad review at the end
+- Bounded cluster context (no session-history pollution)
+- Risk-routed review per cluster, broad review at the end
 - Faster iteration (no human-in-loop between tasks)
 
 ## Plan Sources
