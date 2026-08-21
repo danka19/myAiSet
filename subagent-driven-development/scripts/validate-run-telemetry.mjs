@@ -23,6 +23,7 @@ function cumulativeTokens(payload) {
 
 export function parseRolloutText(text) {
   const calls = [];
+  const agentActivities = [];
   const tokenSamples = [];
   const telemetryGaps = [];
   let recognizedLines = 0;
@@ -45,8 +46,27 @@ export function parseRolloutText(text) {
         if (!args) {
           telemetryGaps.push(`line ${index + 1}: unreadable ${name} arguments`);
         }
-        calls.push({ name, args, line: index + 1, timestamp: event.timestamp ?? null });
+        calls.push({
+          name,
+          args,
+          callId: event.payload.call_id ?? null,
+          line: index + 1,
+          timestamp: event.timestamp ?? null,
+        });
       }
+    }
+
+    if (
+      event?.type === "event_msg"
+      && event.payload?.type === "sub_agent_activity"
+      && event.payload?.kind === "started"
+    ) {
+      recognizedLines += 1;
+      agentActivities.push({
+        callId: event.payload.event_id ?? null,
+        agentThreadId: event.payload.agent_thread_id ?? null,
+        agentPath: event.payload.agent_path ?? null,
+      });
     }
 
     if (event?.type === "event_msg" && event.payload?.type === "token_count") {
@@ -64,7 +84,7 @@ export function parseRolloutText(text) {
     telemetryGaps.push("unrecognized rollout schema: no supported calls or token samples");
   }
 
-  return { calls, tokenSamples, telemetryGaps };
+  return { calls, agentActivities, tokenSamples, telemetryGaps };
 }
 
 function increment(record, key) {
@@ -76,6 +96,31 @@ function matchingRoute(routes, args) {
   return routes.find(
     (route) => route.taskName === args?.task_name && route.role === args?.agent_type,
   );
+}
+
+function followupRoute(parsed, routes, target) {
+  const direct = routes.filter((route) => route.taskName === target);
+  if (direct.length === 1) return direct[0];
+
+  const activity = (parsed.agentActivities ?? []).find(
+    (candidate) => candidate.agentThreadId === target || candidate.agentPath === target,
+  );
+  if (activity) {
+    const spawn = (parsed.calls ?? []).find(
+      (call) => call.name === "spawn_agent" && call.callId === activity.callId,
+    );
+    const viaSpawn = routes.filter(
+      (route) => route.taskName === spawn?.args?.task_name
+        && route.role === spawn?.args?.agent_type,
+    );
+    if (viaSpawn.length === 1) return viaSpawn[0];
+  }
+
+  const canonicalSuffix = routes.filter(
+    (route) => !String(route.taskName).includes("/")
+      && String(target).endsWith(`/${route.taskName}`),
+  );
+  return canonicalSuffix.length === 1 ? canonicalSuffix[0] : null;
 }
 
 export function validateTelemetry(parsed, manifest) {
@@ -98,12 +143,13 @@ export function validateTelemetry(parsed, manifest) {
       followups += 1;
       const args = call.args;
       if (!args) continue;
-      const taskName = String(args.target ?? "").split("/").filter(Boolean).at(-1);
-      const route = routes.find((candidate) => candidate.taskName === taskName);
+      const route = followupRoute(parsed, routes, args.target);
       if (!route) {
         violations.push(`${args.target ?? "unknown"}: unplanned followup target`);
         continue;
       }
+
+      const taskName = route.taskName;
 
       increment(followupsByTask, taskName);
       const allowance = Number.isInteger(route.maxFollowups) ? route.maxFollowups : 0;

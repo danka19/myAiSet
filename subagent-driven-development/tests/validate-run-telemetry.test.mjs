@@ -32,6 +32,19 @@ function followup(target) {
   });
 }
 
+function activity(callId, agentThreadId, agentPath) {
+  return JSON.stringify({
+    type: "event_msg",
+    payload: {
+      type: "sub_agent_activity",
+      kind: "started",
+      event_id: callId,
+      agent_thread_id: agentThreadId,
+      agent_path: agentPath,
+    },
+  });
+}
+
 function tokens(total) {
   return JSON.stringify({
     type: "event_msg",
@@ -120,6 +133,50 @@ test("unplanned followup target fails", () => {
   const rollout = [tokens(10), followup("/root/not-planned"), tokens(20)].join("\n");
   const result = validateTelemetry(parseRolloutText(rollout), manifest());
   assert.match(result.violations.join("\n"), /unplanned followup target/i);
+});
+
+test("agent-id followup resolves through sub-agent activity", () => {
+  const spawn = JSON.parse(call("review-1", "reviewer", "none"));
+  spawn.payload.call_id = "call-review-1";
+  const reviewManifest = manifest({
+    routes: [{
+      taskName: "review-1",
+      role: "reviewer",
+      forkTurns: "none",
+      maxFollowups: 1,
+    }],
+  });
+  const rollout = [
+    tokens(10),
+    JSON.stringify(spawn),
+    activity("call-review-1", "agent-123", "/root/review-1"),
+    followup("agent-123"),
+    tokens(20),
+  ].join("\n");
+  const result = validateTelemetry(parseRolloutText(rollout), reviewManifest);
+  assert.equal(result.ok, true);
+  assert.equal(result.metrics.followupsByTask["review-1"], 1);
+  assert.equal(result.metrics.reviewLoops["review-1"], 2);
+});
+
+test("full canonical followup names do not collapse nested routes", () => {
+  const nestedManifest = manifest({
+    routes: [{
+      taskName: "/root/team-a/review",
+      role: "reviewer",
+      forkTurns: "none",
+      maxFollowups: 1,
+    }],
+  });
+  const rollout = [
+    tokens(10),
+    call("/root/team-a/review", "reviewer", "none"),
+    followup("/root/team-a/review"),
+    tokens(20),
+  ].join("\n");
+  const result = validateTelemetry(parseRolloutText(rollout), nestedManifest);
+  assert.equal(result.ok, true);
+  assert.equal(result.metrics.followupsByTask["/root/team-a/review"], 1);
 });
 
 test("cumulative token replay uses final minus initial baseline", () => {
