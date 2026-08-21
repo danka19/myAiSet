@@ -144,6 +144,19 @@ Keep reporting durable but sparse. For every cluster, write one compact entry in
 
 Each dispatch declares its first expected artifact and a proportional checkpoint: normally a factual report within 15 minutes or a first implementation artifact within 30 minutes. If the checkpoint passes without an artifact or meaningful status, apply the Autonomous Stall Circuit Breaker. Record observed durations; never invent estimates of model "thinking time".
 
+After a measured run, validate the route manifest against available Codex
+rollout telemetry with:
+
+```text
+node scripts/validate-run-telemetry.mjs --manifest <routes.json> --rollout <rollout.jsonl> [--out <result.json>]
+```
+
+This is a post-run conformance check, not live dispatch interception or a
+billing meter. It reports a `telemetry_gap` when the rollout schema or
+cumulative token samples are unavailable; never replace missing data with a
+zero. Record focused/full test runs and scope-admission decisions separately
+because the rollout does not reliably classify them.
+
 ### Scope Firewall
 
 The accepted task contract is its brief, binding global constraints, accepted architecture decision, and stated acceptance evidence. A review blocks the task only for a defect that demonstrably violates one of those items or creates a concrete regression/security/data-integrity risk in the changed code.
