@@ -1,0 +1,4 @@
+interface:
+  display_name: "Roadmap OpenSpec Validator"
+  short_description: "Validate roadmap and OpenSpec phase ownership"
+  default_prompt: "Use $roadmap-openspec-validator to validate roadmap phases, accepted capability specs, active OpenSpec changes, inverse tables, and lifecycle metadata."

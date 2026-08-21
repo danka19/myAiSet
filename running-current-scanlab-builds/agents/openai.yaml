@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run Current ScanLab Builds"
+  short_description: "Build, verify, deploy, and launch ScanLab"
+  default_prompt: "Use $running-current-scanlab-builds to launch the current verified ScanLab build on Windows and RED OS."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evidence Audit"
+  short_description: "Create durable evidence-based audit records"
+  default_prompt: "Use $evidence-audit to define criteria, verify findings, and record a substantial audit."

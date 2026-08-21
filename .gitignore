@@ -1,0 +1,17 @@
+# Runtime-owned system skills are updated outside this user repository.
+.system/
+
+# Local scratch and generated test output.
+**/.tmp/
+**/tmp/
+**/coverage/
+*.log
+
+# Secrets never belong in the skills repository.
+.env
+.env.*
+*.key
+*.pem
+*.pfx
+*.p12
+*.token

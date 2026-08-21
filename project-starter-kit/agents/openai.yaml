@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Starter Kit"
+  short_description: "Bootstrap docs, rules, phases, and agent workflows"
+  default_prompt: "Use $project-starter-kit to initialize this repository with my standard documentation, phase workflow, and verification checklist. Workflow skills stay global in ~/.codex/skills."

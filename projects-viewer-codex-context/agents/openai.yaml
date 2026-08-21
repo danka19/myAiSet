@@ -1,0 +1,4 @@
+interface:
+  display_name: "Projects Viewer Codex Context"
+  short_description: "Projects Viewer API and MCP context"
+  default_prompt: "Use $projects-viewer-codex-context to fetch local Projects Viewer context before working."
