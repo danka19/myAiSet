@@ -7,12 +7,11 @@ description: Use when completing tasks, implementing major features, or before m
 
 Dispatch a code reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.
 
-**Core principle:** Review early, review often.
+**Core principle:** Review at a risk-appropriate boundary with an exact diff and requirement set.
 
 ## When to Request Review
 
 **Mandatory:**
-- After each task in subagent-driven development
 - After completing major feature
 - Before merge to main
 
@@ -75,12 +74,12 @@ You: [Fix progress indicators]
 ## Integration with Workflows
 
 **Subagent-Driven Development:**
-- Review after EACH task
-- Catch issues before they compound
-- Fix before moving to next task
+- `subagent-driven-development` owns task and cluster review routing.
+- Use this skill for its one final whole-branch review, or when that route
+  explicitly requests the reviewer template.
 
 **Executing Plans:**
-- Review after each task or at natural checkpoints
+- Review at approved checkpoints or before integration
 - Get feedback, apply, continue
 
 **Ad-Hoc Development:**
@@ -90,7 +89,7 @@ You: [Fix progress indicators]
 ## Red Flags
 
 **Never:**
-- Skip review because "it's simple"
+- Skip a review required by the owning risk route
 - Ignore Critical issues
 - Proceed with unfixed Important issues
 - Argue with valid technical feedback

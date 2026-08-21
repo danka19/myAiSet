@@ -167,37 +167,37 @@ Use clusters to remove duplicated setup and review, not to lower evidence. A coh
 digraph process {
     rankdir=TB;
 
-    subgraph cluster_per_task {
-        label="Per Task";
-        "Classify risk and dispatch implementer (./implementer-prompt.md)" [shape=box];
+    subgraph cluster_execution {
+        label="Per Cluster";
+        "Form cluster, classify risk, dispatch implementer" [shape=box];
         "Implementer subagent asks questions?" [shape=diamond];
         "Answer questions, provide context" [shape=box];
-        "Implementer subagent implements, tests, commits, self-reviews" [shape=box];
-        "Medium/High? Write diff and dispatch task reviewer" [shape=box];
-        "Task reviewer reports spec ✅ and quality approved?" [shape=diamond];
+        "Implementer executes tasks, records per-task evidence, self-reviews" [shape=box];
+        "Medium/High? Freeze cluster diff and dispatch reviewer" [shape=box];
+        "Cluster reviewer approves every included task?" [shape=diamond];
         "Dispatch one fix wave for blocking findings" [shape=box];
-        "Mark task complete in todo list and progress ledger" [shape=box];
+        "Mark evidenced tasks complete in progress ledger" [shape=box];
     }
 
     "Read plan, note context and global constraints, create todos" [shape=box];
-    "More tasks remain?" [shape=diamond];
+    "More clusters remain?" [shape=diamond];
     "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [shape=box];
     "Use superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
-    "Read plan, note context and global constraints, create todos" -> "Classify risk and dispatch implementer (./implementer-prompt.md)";
-    "Classify risk and dispatch implementer (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
+    "Read plan, note context and global constraints, create todos" -> "Form cluster, classify risk, dispatch implementer";
+    "Form cluster, classify risk, dispatch implementer" -> "Implementer subagent asks questions?";
     "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
-    "Answer questions, provide context" -> "Classify risk and dispatch implementer (./implementer-prompt.md)";
-    "Implementer subagent asks questions?" -> "Implementer subagent implements, tests, commits, self-reviews" [label="no"];
-    "Implementer subagent implements, tests, commits, self-reviews" -> "Medium/High? Write diff and dispatch task reviewer";
-    "Medium/High? Write diff and dispatch task reviewer" -> "Task reviewer reports spec ✅ and quality approved?" [label="yes"];
-    "Medium/High? Write diff and dispatch task reviewer" -> "Mark task complete in todo list and progress ledger" [label="Low"];
-    "Task reviewer reports spec ✅ and quality approved?" -> "Dispatch one fix wave for blocking findings" [label="blocking"];
-    "Dispatch one fix wave for blocking findings" -> "Write diff file, dispatch task reviewer subagent (./task-reviewer-prompt.md)" [label="re-review"];
-    "Task reviewer reports spec ✅ and quality approved?" -> "Mark task complete in todo list and progress ledger" [label="yes"];
-    "Mark task complete in todo list and progress ledger" -> "More tasks remain?";
-    "More tasks remain?" -> "Classify risk and dispatch implementer (./implementer-prompt.md)" [label="yes"];
-    "More tasks remain?" -> "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [label="no"];
+    "Answer questions, provide context" -> "Form cluster, classify risk, dispatch implementer";
+    "Implementer subagent asks questions?" -> "Implementer executes tasks, records per-task evidence, self-reviews" [label="no"];
+    "Implementer executes tasks, records per-task evidence, self-reviews" -> "Medium/High? Freeze cluster diff and dispatch reviewer";
+    "Medium/High? Freeze cluster diff and dispatch reviewer" -> "Cluster reviewer approves every included task?" [label="yes"];
+    "Medium/High? Freeze cluster diff and dispatch reviewer" -> "Mark evidenced tasks complete in progress ledger" [label="Low"];
+    "Cluster reviewer approves every included task?" -> "Dispatch one fix wave for blocking findings" [label="blocking"];
+    "Dispatch one fix wave for blocking findings" -> "Cluster reviewer approves every included task?" [label="re-review"];
+    "Cluster reviewer approves every included task?" -> "Mark evidenced tasks complete in progress ledger" [label="yes"];
+    "Mark evidenced tasks complete in progress ledger" -> "More clusters remain?";
+    "More clusters remain?" -> "Form cluster, classify risk, dispatch implementer" [label="yes"];
+    "More clusters remain?" -> "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" [label="no"];
     "Dispatch final code reviewer subagent (../requesting-code-review/code-reviewer.md)" -> "Use superpowers:finishing-a-development-branch";
 }
 ```
@@ -247,7 +247,12 @@ that implementer. Single-file mechanical fixes also take the cheapest tier.
 
 Implementer subagents report one of four statuses. Handle each appropriately:
 
-**DONE:** Generate the review package (`scripts/review-package BASE HEAD`, from this skill's directory — it prints the unique file path it wrote; BASE is the commit you recorded before dispatching the implementer — never `HEAD~1`, which silently drops all but the last commit of a multi-commit task), then dispatch the task reviewer with the printed path.
+**DONE:** Record each included task's evidence. For a Medium/High cluster,
+generate the review package (`scripts/review-package BASE HEAD`, from this
+skill's directory — it prints the unique file path it wrote; BASE is the
+commit recorded before the cluster — never `HEAD~1`) and dispatch the cluster
+reviewer. For a Low cluster, complete the self-review route without a separate
+reviewer.
 
 **DONE_WITH_CONCERNS:** The implementer completed the work but flagged doubts. Read the concerns before proceeding. If the concerns are about correctness or scope, address them before review. If they're observations (e.g., "this file is getting large"), note them and proceed to review.
 
@@ -276,7 +281,7 @@ Before dispatching a fix, classify every finding as **Blocking** or **Follow-up*
 
 ## Constructing Reviewer Prompts
 
-Per-task reviews are task-scoped gates for Medium and High tasks. The broad review happens once, at the final whole-branch review. When you fill a reviewer template:
+Cluster reviews are task-aware gates for Medium and High clusters. The broad review happens once, at the final whole-branch review. When you fill a reviewer template:
 
 - Do not add open-ended directives like "check all uses" or "run race tests
   if useful" without a concrete, task-specific reason
@@ -384,7 +389,7 @@ a ledger file, not only in todos.
 ## Prompt Templates
 
 - [implementer-prompt.md](implementer-prompt.md) - Dispatch implementer subagent
-- [task-reviewer-prompt.md](task-reviewer-prompt.md) - Dispatch task reviewer subagent (spec compliance + code quality)
+- [task-reviewer-prompt.md](task-reviewer-prompt.md) - Dispatch a Medium/High cluster reviewer (spec compliance + code quality for every included task)
 - Final whole-branch review: use superpowers:requesting-code-review's [code-reviewer.md](../requesting-code-review/code-reviewer.md)
 
 ## Example Workflow
@@ -395,9 +400,9 @@ You: I'm using Subagent-Driven Development to execute this plan.
 [Read plan file once: docs/superpowers/plans/feature-plan.md]
 [Create todos for all tasks]
 
-Task 1: Hook installation script
+Cluster 1: Hook installation and recovery modes (Tasks 1-2)
 
-[Run task-brief for Task 1; dispatch implementer with brief + report paths + context]
+[Write one cluster brief with separate Task 1 and Task 2 evidence; dispatch implementer]
 
 Implementer: "Before I begin - should the hook be installed at user or system level?"
 
@@ -410,25 +415,14 @@ Implementer: "Got it. Implementing now..."
   - Self-review: Found I missed --force flag, added it
   - Committed
 
-[Run review-package, dispatch task reviewer with the printed path]
-Task reviewer: Spec ✅ - all requirements met, nothing extra.
-  Strengths: Good test coverage, clean. Issues: None. Task quality: Approved.
-
-[Mark Task 1 complete]
-
-Task 2: Recovery modes
-
-[Run task-brief for Task 2; dispatch implementer with brief + report paths + context]
-
-Implementer: [No questions, proceeds]
-Implementer:
+Implementer continues Task 2 in the same bounded cluster:
   - Added verify/repair modes
   - 8/8 tests passing
   - Self-review: All good
   - Committed
 
-[Run review-package, dispatch task reviewer with the printed path]
-Task reviewer: Spec ❌:
+[Run review-package once, dispatch cluster reviewer with the printed path]
+Cluster reviewer: Task 1 ✅; Task 2 ❌:
   - Missing: Progress reporting (spec says "report every 100 items")
   - Extra: Added --json flag (not requested)
   Issues (Important): Magic number (100)
@@ -436,8 +430,8 @@ Task reviewer: Spec ❌:
 [Dispatch fix subagent with all findings]
 Fixer: Removed --json flag, added progress reporting, extracted PROGRESS_INTERVAL constant
 
-[Task reviewer reviews again]
-Task reviewer: Spec ✅. Task quality: Approved.
+[Cluster reviewer reviews the fixed snapshot once]
+Cluster reviewer: Task 1 ✅; Task 2 ✅. Cluster quality: Approved.
 
 [Mark Task 2 complete]
 
@@ -454,7 +448,7 @@ Done!
 
 **vs. Manual execution:**
 - Subagents follow TDD naturally
-- Fresh context per task (no confusion)
+- Bounded context per cluster (no accumulated-session confusion)
 - Parallel-safe (subagents don't interfere)
 - Subagent can ask questions (before AND during work)
 

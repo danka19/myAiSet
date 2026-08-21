@@ -35,11 +35,10 @@ This structure informs the task decomposition. Each task should produce self-con
 
 ## Task Right-Sizing
 
-A task is the smallest unit that carries its own test cycle and is worth a
-fresh reviewer's gate. When drawing task boundaries: fold setup,
+A task is the smallest independently testable acceptance unit. When drawing task boundaries: fold setup,
 configuration, scaffolding, and documentation steps into the task whose
-deliverable needs them; split only where a reviewer could meaningfully
-reject one task while approving its neighbor. Each task ends with an
+deliverable needs them; split only where one deliverable can be accepted or
+rejected independently of its neighbor. Each task ends with an
 independently testable deliverable.
 
 ## Bite-Sized Task Granularity
@@ -159,7 +158,7 @@ After saving the plan, offer execution choice:
 
 **"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Two execution options:**
 
-**1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
+**1. Subagent-Driven (recommended)** - Execute bounded implementation clusters with risk-routed review
 
 **2. Inline Execution** - Execute tasks in this session using executing-plans, batch execution with checkpoints
 
@@ -167,7 +166,7 @@ After saving the plan, offer execution choice:
 
 **If Subagent-Driven chosen:**
 - **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
-- Fresh subagent per task + two-stage review
+- That skill owns cluster formation and the task/cluster review route
 
 **If Inline Execution chosen:**
 - **REQUIRED SUB-SKILL:** Use superpowers:executing-plans
