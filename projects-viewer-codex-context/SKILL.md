@@ -1,6 +1,6 @@
 ---
 name: projects-viewer-codex-context
-description: Use when working in or about the Projects Viewer repository, needing to start its local dashboard, fetch a Codex/agent preflight packet, use its local read-only APIs, use its Projects Viewer MCP tools, or update project agent workflow documentation.
+description: "Work in Projects Viewer: start its dashboard, retrieve agent context, use its read-only APIs, or update its agent workflow."
 ---
 
 # Projects Viewer Codex Context

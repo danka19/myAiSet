@@ -1,6 +1,6 @@
 ---
 name: phase-step-runner
-description: Execute exactly one roadmap phase work item at a time with implementation, focused verification, documentation updates, change-intake handling for new ideas, and a commit when project rules require it. Use when the user asks to continue a phase, complete the next phase item, do one phase step, or work through a detailed phase plan incrementally.
+description: "Execute the next single roadmap work item or an explicitly selected phase step."
 ---
 
 # Phase Step Runner

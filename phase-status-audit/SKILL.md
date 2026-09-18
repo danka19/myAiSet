@@ -1,6 +1,6 @@
 ---
 name: phase-status-audit
-description: Use when checking roadmap, phase plans, closed phases, completed steps, or old phase documentation for missing, stale, contradictory, or implicit statuses before planning, implementation, acceptance, closure, or documentation sync.
+description: "Check roadmap and phase statuses at phase entry, acceptance, closure, or when stale prerequisite status is suspected."
 ---
 
 # Phase Status Audit

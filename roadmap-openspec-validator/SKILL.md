@@ -1,6 +1,6 @@
 ---
 name: roadmap-openspec-validator
-description: Use when creating, changing, auditing, planning, applying, syncing, archiving, or validating roadmap phases, accepted capability specs, active OpenSpec changes, phase ownership metadata, or roadmap inverse tables.
+description: "Validate roadmap/OpenSpec ownership and lifecycle after relevant changes or at required phase gates."
 ---
 
 # Roadmap OpenSpec Validator

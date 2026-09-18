@@ -1,102 +1,28 @@
 ---
 name: requesting-code-review
-description: Use when completing tasks, implementing major features, or before merging to verify work meets requirements
+description: "Request independent review for significant changes, an owning workflow gate, or an explicit review request. Skip routine micro-edits."
 ---
 
 # Requesting Code Review
 
-Dispatch a code reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.
+Use independent judgment for significant changes, explicit review requests, and required project gates. Self-review is sufficient for routine low-risk micro-edits unless the owning workflow requires more.
 
-**Core principle:** Review at a risk-appropriate boundary with an exact diff and requirement set.
+`subagent-driven-development` owns task and cluster review routing when active. This skill supplies the final review template without adding duplicate task reviews.
 
-## When to Request Review
+## Review Package
 
-**Mandatory:**
-- After completing major feature
-- Before merge to main
+Record the actual baseline before implementation and the final snapshot. For a branch, determine its correct merge base. Do not assume `HEAD~1` covers a multi-commit change.
 
-**Optional but valuable:**
-- When stuck (fresh perspective)
-- Before refactoring (baseline check)
-- After fixing complex bug
+Supply the reviewer with:
+- Requirements and binding constraints, including exact contract values.
+- The immutable `BASE..HEAD` diff/package and relevant file paths.
+- Evidence already collected, skipped checks, and known limitations.
+- The desired review scope and a report artifact path for substantial findings.
 
-## How to Request
+Use [code-reviewer.md](code-reviewer.md) with an available reviewer profile and the bounded dispatch contract. Keep the reviewed snapshot unchanged until the verdict. Reviewers inspect code independently; the implementer's rationale does not determine severity.
 
-**1. Get git SHAs:**
-```bash
-BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
-HEAD_SHA=$(git rev-parse HEAD)
-```
+## Findings
 
-**2. Dispatch code reviewer subagent:**
+Resolve in-scope Critical/Important defects supported by code evidence. Keep hardening ideas and unrelated improvements as follow-ups. Consolidate blocking fixes into one wave and re-review the changed snapshot; do not dispatch one fixer per finding. Resolve conflicts with accepted requirements before changing the contract.
 
-Dispatch a `general-purpose` subagent, filling the template at [code-reviewer.md](code-reviewer.md)
-
-**Placeholders:**
-- `{DESCRIPTION}` - Brief summary of what you built
-- `{PLAN_OR_REQUIREMENTS}` - What it should do
-- `{BASE_SHA}` - Starting commit
-- `{HEAD_SHA}` - Ending commit
-
-**3. Act on feedback:**
-- Fix Critical issues immediately
-- Fix Important issues before proceeding
-- Note Minor issues for later
-- Push back if reviewer is wrong (with reasoning)
-
-## Example
-
-```
-[Just completed Task 2: Add verification function]
-
-You: Let me request code review before proceeding.
-
-BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
-HEAD_SHA=$(git rev-parse HEAD)
-
-[Dispatch code reviewer subagent]
-  DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types
-  PLAN_OR_REQUIREMENTS: Task 2 from docs/superpowers/plans/deployment-plan.md
-  BASE_SHA: a7981ec
-  HEAD_SHA: 3df7661
-
-[Subagent returns]:
-  Strengths: Clean architecture, real tests
-  Issues:
-    Important: Missing progress indicators
-    Minor: Magic number (100) for reporting interval
-  Assessment: Ready to proceed
-
-You: [Fix progress indicators]
-[Continue to Task 3]
-```
-
-## Integration with Workflows
-
-**Subagent-Driven Development:**
-- `subagent-driven-development` owns task and cluster review routing.
-- Use this skill for its one final whole-branch review, or when that route
-  explicitly requests the reviewer template.
-
-**Executing Plans:**
-- Review at approved checkpoints or before integration
-- Get feedback, apply, continue
-
-**Ad-Hoc Development:**
-- Review before merge
-- Review when stuck
-
-## Red Flags
-
-**Never:**
-- Skip a review required by the owning risk route
-- Ignore Critical issues
-- Proceed with unfixed Important issues
-- Argue with valid technical feedback
-
-**If reviewer wrong:**
-- Push back with technical reasoning
-- Show code/tests that prove it works
-- Request clarification
-
-See template at: [code-reviewer.md](code-reviewer.md)
+Reuse existing check results for unchanged code. New checks need a concrete unanswered concern; do not override an explicit no-test request. A skipped check remains a limitation, not a passing result.

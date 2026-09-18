@@ -1,6 +1,6 @@
 ---
 name: running-current-scanlab-builds
-description: Use when a user asks to build, refresh, deploy, launch, relaunch, or restart the current ScanLab application on Windows, RED OS, or both, including Russian requests such as запусти, перезапусти, or актуальная сборка.
+description: "Build, deploy, launch, or restart the current ScanLab application on Windows or RED OS when requested."
 ---
 
 # Running Current ScanLab Builds

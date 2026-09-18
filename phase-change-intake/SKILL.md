@@ -1,6 +1,6 @@
 ---
 name: phase-change-intake
-description: Triage new ideas, fixes, scope changes, architecture notes, data contract changes, or verification requests that appear while a roadmap phase is already in progress. Use before switching plans, changing phase scope, creating an OpenSpec change, or deferring user feedback during phase work.
+description: "Triage new scope or feedback during an active roadmap phase before it changes accepted work or is deferred."
 ---
 
 # Phase Change Intake

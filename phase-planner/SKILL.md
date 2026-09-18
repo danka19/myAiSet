@@ -1,6 +1,6 @@
 ---
 name: phase-planner
-description: Create or update detailed phase implementation plans from roadmap intent, current docs, implementation evidence, audit findings, verification requirements, human decisions, and queued change-intake items. Use when the user asks to plan a phase, make a phase checklist, break roadmap work into work items, handle new ideas during planning, or prepare implementation steps.
+description: "Plan or revise a roadmap phase and its acceptance work items. Skip routine tasks outside a roadmap phase."
 ---
 
 # Phase Planner

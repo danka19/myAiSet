@@ -1,6 +1,6 @@
 ---
 name: openspec-apply-change
-description: Implement tasks from an OpenSpec change. Use when the user wants to start implementing, continue implementation, or work through tasks.
+description: "Implement or continue tasks in an identified OpenSpec change. Skip work without an OpenSpec change or applicable project requirement."
 license: MIT
 metadata:
   author: openspec

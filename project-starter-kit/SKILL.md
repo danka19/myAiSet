@@ -1,6 +1,6 @@
 ---
 name: project-starter-kit
-description: Bootstrap a new repository in the user's standard Codex working mode, or migrate an existing repository to it. Use when the user asks to start a new project from scratch, create the documentation structure, fill known context, add AGENTS.md rules, adopt a bidirectional roadmap and OpenSpec workflow, or prepare a repository so future Codex sessions can plan and implement disciplined changes.
+description: "Bootstrap a new repository or explicitly migrate an existing repository to the standard project workflow."
 ---
 
 # Project Starter Kit

@@ -1,6 +1,6 @@
 ---
 name: phase-full-runner
-description: Use when executing a complete roadmap phase, coordinating phase gates, dependencies, OpenSpec status, and end-of-phase acceptance across multiple work items.
+description: "Execute a complete requested roadmap phase, including dependencies, work items, and phase acceptance."
 ---
 
 # Phase Full Runner

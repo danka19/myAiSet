@@ -1,64 +1,28 @@
 ---
 name: session-report
-description: Produce the end-of-session user report in the user's standard format, scaled to task size. Use at the end of any work session, when the user asks for a work report, or when a project AGENTS.md requires a final report.
+description: "Report completed work or session status in the user standard format. Scale detail to the task; skip factual conversation without performed work."
 ---
 
 # Session Report
 
-User-facing reports are written in Russian unless the user asks otherwise. Reports must be self-contained: the human should understand the result, main decisions, reasoning, and current project state without opening changed files. Links to files are supporting evidence, not a substitute for explanation.
+Write user-facing reports in Russian unless requested otherwise. Lead with the outcome and scale detail to the work. The user should understand the result without opening supporting files.
 
-## Pick the mode first
+## Short Mode
 
-**Short mode** — for bounded tasks: small fixes, doc edits, single-file changes, question-driven investigations, anything under ~30 minutes of agent work.
+For bounded work, cover the result, material changes, actual verification or skipped checks, and any unresolved decision in a few sentences or bullets. Include the commit/PR or deliverable link when useful. No headings or empty report fields are required.
 
-**Full mode** — for phase work items, multi-file features, architecture changes, anything touching data contracts, security, or product behavior.
+## Full Mode
 
-When unsure, use short mode and offer details on request.
+For phase, architecture, or substantial OpenSpec work, also cover:
+- Completed scope and remaining work.
+- Decisions, reasoning, material tradeoffs, and user-visible effects.
+- Required checks and their actual results; remaining manual checks with actionable steps.
+- Documentation updates, or why none were needed.
+- Skills/delegation used and usage figures only when measured.
+- Dependency and human-acceptance status; no implied acceptance from a request to continue.
 
-OpenSpec implementation defaults to full mode when it touches product behavior, data contracts, security, multiple files, or user-visible behavior. Use short mode only for small spec/docs edits or narrow investigations.
+For OpenSpec include change/schema, task progress, affected requirements/scenarios, validation evidence, and archive readiness. For roadmap phases include the phase-status-audit result and unfinished or pending child work. For closed work include the PR URL/status to `main` or the documented stable-branch fallback, or the concrete PR blocker.
 
-## Short mode (4 points)
+Reference the dated evidence record when a substantial audit was performed; do not start a new audit just to produce the report. Reconcile user corrections and accepted scope before declaring completion. Separate demonstrated outcomes from expectations; user-excluded tests are reported as not run.
 
-1. Task, in plain language.
-2. What was done and what changed (files/modules, key counts or results).
-3. How it was verified (or explicitly: not verified, and what a manual check would be).
-4. Open questions / next human decision, if any.
-
-## Full mode
-
-Everything in short mode, plus:
-
-5. Decisions and judgment calls made, with reasoning.
-6. What changed for the end user.
-7. Which changes require manual verification and the exact steps.
-8. Documentation updated (which files) or why no update was needed.
-9. Skills and subagents used (role names, token counts when available).
-
-For phase, step, roadmap, architecture, or OpenSpec work, include an executive summary written in plain language:
-
-- What was completed and what project state changed.
-- Main decisions made and why those choices fit the specs, phase goal, architecture, or safety constraints.
-- Important tradeoffs, rejected options, or assumptions when they shaped the result.
-- The practical takeaway: what the human can now rely on, what remains uncertain, and what should happen next.
-
-For OpenSpec implementation, include:
-
-- Change name and schema.
-- Task progress before and after the session.
-- Requirements/scenarios or change artifacts touched.
-- Verification evidence, including OpenSpec validation when relevant.
-- Subagent decision: used roles, or why subagents were not used.
-- Whether the change is ready to archive, paused, or still has remaining tasks.
-- For closed OpenSpec changes or phases: PR target (`main` unless default stable branch fallback), PR URL/status, or blocker preventing PR creation.
-
-## Rules
-
-- When the session performed a substantial audit, **REQUIRED SUB-SKILL:** use `evidence-audit`; name the durable dated audit file in the final report and include the remediation decision or question.
-- Never pad a short task into a full report. The report protocol must not cost more than the task.
-- For phase, step, roadmap, architecture, or OpenSpec work, do not send the human to read files instead of explaining the outcome. Mention changed files only after summarizing their substance.
-- If the user answered agent questions during the session, report where each durable answer was captured. Before final acceptance/completion reports, re-check the full dialogue so earlier accepted decisions and proposed ideas are not lost behind the last discussed point.
-- For roadmap, phase, or step work, include whether `phase-status-audit` was run, which statuses were fixed, and whether any old phase plan still has unfinished, unmarked, invalid, or pending-acceptance items.
-- Do not use free-form completion summaries for OpenSpec implementation; use the fields above.
-- For closed specs/phases, do not omit PR status. Closing means archive/gate/docs/verification/commit plus PR creation or a clearly reported PR blocker.
-- Numbers and file names beat adjectives. "Rewrote 3 of 14 validators, 2 tests added" beats "improved validation".
-- End with the single most useful next action for the human, when one exists.
+End with the useful next action only when one exists. Do not create an approval request, full report ceremony, or repeated summary for an otherwise finished task.

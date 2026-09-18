@@ -1,6 +1,6 @@
 ---
 name: handoff-to-claude
-description: Prepare, execute, and close a bounded task handoff from Codex to Claude (Claude Code / Cowork). Use when the user asks to hand a task to Claude, delegate a UI or design-review task, prepare a Claude handoff file, or integrate a Claude-produced diff back into the project.
+description: "Prepare or integrate a bounded Claude Code or Cowork handoff when the user explicitly requests delegation to Claude."
 ---
 
 # Handoff to Claude

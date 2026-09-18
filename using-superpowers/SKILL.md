@@ -1,132 +1,23 @@
 ---
 name: using-superpowers
-description: Use when starting any conversation - establishes how to find and use skills, requiring skill invocation before ANY response including clarifying questions
+description: "Resolve skill selection or workflow coordination when it is unclear which specialized process applies. Skip routine requests with an obvious route."
 ---
-
-<SUBAGENT-STOP>
-If you were dispatched as a subagent to execute a specific task, skip this skill.
-</SUBAGENT-STOP>
-
-<EXTREMELY-IMPORTANT>
-If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
-
-IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
-
-This is not negotiable. This is not optional. You cannot rationalize your way out of this.
-</EXTREMELY-IMPORTANT>
-
-## Instruction Priority
-
-Superpowers skills override default system prompt behavior, but **user instructions always take precedence**:
-
-1. **User's explicit instructions** (CLAUDE.md, GEMINI.md, AGENTS.md, direct requests) — highest priority
-2. **Superpowers skills** — override default system behavior where they conflict
-3. **Default system prompt** — lowest priority
-
-If CLAUDE.md, GEMINI.md, or AGENTS.md says "don't use TDD" and a skill says "always use TDD," follow the user's instructions. The user is in control.
-
-## How to Access Skills
-
-**Never read skill files manually with file tools** — always use your platform's skill-loading mechanism so the skill is properly activated.
-
-**In Claude Code:** Use the `Skill` tool. When you invoke a skill, its content is loaded and presented to you — follow it directly.
-
-**In Codex:** Skills load natively. Follow the instructions presented when a skill activates.
-
-**In Copilot CLI:** Use the `skill` tool. Skills are auto-discovered from installed plugins.
-
-**In Gemini CLI:** Skills activate via the `activate_skill` tool. Gemini loads skill metadata at session start and activates the full content on demand.
-
-**In other environments:** Check your platform's documentation for how skills are loaded.
-
-## Platform Adaptation
-
-Skills speak in actions ("dispatch a subagent", "create a todo", "read a file") rather than naming any one runtime's tools. For per-platform tool equivalents and instructions-file conventions, see [claude-code-tools.md](references/claude-code-tools.md), [codex-tools.md](references/codex-tools.md), [copilot-tools.md](references/copilot-tools.md), [gemini-tools.md](references/gemini-tools.md), [pi-tools.md](references/pi-tools.md), and [antigravity-tools.md](references/antigravity-tools.md). Gemini CLI users get the tool mapping loaded automatically via GEMINI.md.
-
-## Subagent Dispatch Contract
-
-This section is the canonical cross-skill contract for subagent context.
-
-- Every ordinary dispatch explicitly sets `fork_turns: "none"`. Omitting `fork_turns` is prohibited, and `fork_turns: "all"` is prohibited.
-- A positive integer is allowed only when a preflight record names the exact
-  turns required and explains why a bounded brief cannot carry that decision.
-- The prompt contains one bounded task and the minimum binding context, or
-  paths to those artifacts. It never contains accumulated session history.
-- The inline result contains only status, artifact paths, verification summary, and blockers. Detailed findings, logs, and diffs go in the named artifact.
 
 # Using Skills
 
-## The Rule
+Choose the smallest workflow that adds task-specific knowledge. Explicitly named skills apply; otherwise match the actual request to a precise trigger. Routine questions and edits do not need a process skill. Read a selected skill once, then only references needed for the current step.
 
-**Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means that you should invoke the skill to check. If an invoked skill turns out to be wrong for the situation, you don't need to use it.
+Follow the host's instruction hierarchy. Skills do not override system/developer requirements or the user's explicit scope, permissions, and preferences. A user-approved action need not be approved again. Use the available skill-loading mechanism; filesystem-backed skills may be read with file tools when that is how the host provides them.
 
-```dot
-digraph skill_flow {
-    "User message received" [shape=doublecircle];
-    "About to enter plan mode?" [shape=doublecircle];
-    "Already brainstormed?" [shape=diamond];
-    "Invoke brainstorming skill" [shape=box];
-    "Might any skill apply?" [shape=diamond];
-    "Invoke the skill" [shape=box];
-    "Announce: 'Using [skill] to [purpose]'" [shape=box];
-    "Has checklist?" [shape=diamond];
-    "Create a todo per item" [shape=box];
-    "Follow skill exactly" [shape=box];
-    "Respond (including clarifications)" [shape=doublecircle];
+Use one owner for each decision: the project owns requirements and required gates; the selected execution workflow owns task routing. Do not stack parallel plans, reviews, or reports. Resolve routine reversible choices locally; ask only when a missing answer materially changes the result or authority is missing.
 
-    "About to enter plan mode?" -> "Already brainstormed?";
-    "Already brainstormed?" -> "Invoke brainstorming skill" [label="no"];
-    "Already brainstormed?" -> "Might any skill apply?" [label="yes"];
-    "Invoke brainstorming skill" -> "Might any skill apply?";
+## Subagent Dispatch Contract
 
-    "User message received" -> "Might any skill apply?";
-    "Might any skill apply?" -> "Invoke the skill" [label="yes, even 1%"];
-    "Might any skill apply?" -> "Respond (including clarifications)" [label="definitely not"];
-    "Invoke the skill" -> "Announce: 'Using [skill] to [purpose]'";
-    "Announce: 'Using [skill] to [purpose]'" -> "Has checklist?";
-    "Has checklist?" -> "Create a todo per item" [label="yes"];
-    "Has checklist?" -> "Follow skill exactly" [label="no"];
-    "Create a todo per item" -> "Follow skill exactly";
-}
-```
+Delegate only when authorized and a bounded subtask benefits from independence, isolation, or parallel execution. Small connected work stays local.
 
-## Red Flags
+- Ordinary dispatch uses `fork_turns: "none"`. Omitting `fork_turns` is prohibited; `fork_turns: "all"` is prohibited. A bounded history window is appropriate only when necessary context cannot be conveyed accurately in a short brief.
+- Supply one task, binding constraints, inputs, acceptance evidence, and relevant artifact paths. Preserve exact contract values; omit accumulated session history.
+- Return status, artifact paths, verification summary, and blockers. Keep detailed logs and diffs in artifacts when their size warrants files.
+- Use available role/model settings; do not invent capabilities or claim a model override occurred when it did not.
 
-These thoughts mean STOP—you're rationalizing:
-
-| Thought | Reality |
-|---------|---------|
-| "This is just a simple question" | Questions are tasks. Check for skills. |
-| "I need more context first" | Skill check comes BEFORE clarifying questions. |
-| "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
-| "I can check git/files quickly" | Files lack conversation context. Check for skills. |
-| "Let me gather information first" | Skills tell you HOW to gather information. |
-| "This doesn't need a formal skill" | If a skill exists, use it. |
-| "I remember this skill" | Skills evolve. Read current version. |
-| "This doesn't count as a task" | Action = task. Check for skills. |
-| "The skill is overkill" | Simple things become complex. Use it. |
-| "I'll just do this one thing first" | Check BEFORE doing anything. |
-| "This feels productive" | Undisciplined action wastes time. Skills prevent this. |
-| "I know what that means" | Knowing the concept ≠ using the skill. Invoke it. |
-
-## Skill Priority
-
-When multiple skills could apply, use this order:
-
-1. **Process skills first** (brainstorming, systematic-debugging) - these determine HOW to approach the task
-2. **Implementation skills second** (frontend-design, mcp-builder) - these guide execution
-
-"Let's build X" → brainstorming first, then implementation skills.
-"Fix this bug" → systematic-debugging first, then domain-specific skills.
-
-## Skill Types
-
-**Rigid** (TDD, systematic-debugging): Follow exactly. Don't adapt away discipline.
-
-**Flexible** (patterns): Adapt principles to context.
-
-The skill itself tells you which.
-
-## User Instructions
-
-Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
+Consult the matching file in `references/` only when a platform's tool mapping is unclear.

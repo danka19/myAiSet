@@ -1,154 +1,22 @@
 ---
 name: verification-before-completion
-description: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence before assertions always
+description: "Match completion claims to current evidence for changed artifacts. Skip unrelated research and repeated checks of unchanged results."
 ---
 
 # Verification Before Completion
 
-## Overview
-
-Claiming work is complete without verification is dishonesty, not efficiency.
-
-**Core principle:** Evidence before claims, always.
-
-**Violating the letter of this rule is violating the spirit of this rule.**
-
-## The Iron Law
-
-```
-NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
-```
-
-If you haven't run the verification command in this message, you cannot claim it passes.
-
-## The Gate Function
-
-```
-BEFORE claiming any status or expressing satisfaction:
-
-1. IDENTIFY: What command proves this claim?
-2. RUN: Execute the complete selected command (fresh, complete) that proves the exact claim
-3. READ: Full output, check exit code, count failures
-4. VERIFY: Does output confirm the claim?
-   - If NO: State actual status with evidence
-   - If YES: State claim WITH evidence
-5. ONLY THEN: Make the claim
-
-Skip any step = lying, not verifying
-```
+Make the exact claim supported by the available evidence. Inspection, an executed check, and an untested expectation are different evidence levels.
 
 ## Selecting Verification Scope
 
-The project's verification matrix owns command selection. Freshness and
-completeness apply to the selected command; they do not automatically widen a
-local claim into the broadest available suite.
+Use the project's verification matrix and the change's concrete risks. Run the complete selected command, inspect its result and exit status, and relate it to the exact claim. A focused check does not establish release readiness; a small local claim does not require the whole suite.
 
-- A focused command may prove one work item's exact local claim when the
-  project matrix assigns that command to the change type.
-- A phase-complete, release-ready, or whole-project claim requires the full
-  gate named by the project matrix on the final code snapshot.
-- Never describe a focused result as proof of a broader claim. Never replace a
-  required full gate with several unrelated focused runs.
-- Re-run a full gate only after a later change invalidates its evidence under
-  the project matrix; freshness does not require duplicate unchanged runs.
+Reuse evidence for the same artifact snapshot and relevant environment. Re-run affected checks when changes invalidate that evidence. Required release/phase gates still apply; avoid repeating them solely to restate a result.
 
-## Common Failures
+## Completion
 
-| Claim | Requires | Not Sufficient |
-|-------|----------|----------------|
-| Tests pass | Test command output: 0 failures | Previous run, "should pass" |
-| Linter clean | Linter output: 0 errors | Partial check, extrapolation |
-| Build succeeds | Build command: exit 0 | Linter passing, logs look good |
-| Bug fixed | Test original symptom: passes | Code changed, assumed fixed |
-| Regression test works | Red-green cycle verified | Test passes once |
-| Agent completed | VCS diff shows changes | Agent reports "success" |
-| Requirements met | Line-by-line checklist | Tests passing |
-
-## Red Flags - STOP
-
-- Using "should", "probably", "seems to"
-- Expressing satisfaction before verification ("Great!", "Perfect!", "Done!", etc.)
-- About to commit/push/PR without verification
-- Trusting agent success reports
-- Relying on verification narrower than the exact claim or project matrix
-- Thinking "just this once"
-- Tired and wanting work over
-- **ANY wording implying success without having run verification**
-
-## Rationalization Prevention
-
-| Excuse | Reality |
-|--------|---------|
-| "Should work now" | RUN the verification |
-| "I'm confident" | Confidence ≠ evidence |
-| "Just this once" | No exceptions |
-| "Linter passed" | Linter ≠ compiler |
-| "Agent said success" | Verify independently |
-| "I'm tired" | Exhaustion ≠ excuse |
-| "Partial check is enough" | Partial proves nothing |
-| "Different words so rule doesn't apply" | Spirit over letter |
-
-## Key Patterns
-
-**Tests:**
-```
-✅ [Run test command] [See: 34/34 pass] "All tests pass"
-❌ "Should pass now" / "Looks correct"
-```
-
-**Regression tests (TDD Red-Green):**
-```
-✅ Write → Run (pass) → Revert fix → Run (MUST FAIL) → Restore → Run (pass)
-❌ "I've written a regression test" (without red-green verification)
-```
-
-**Build:**
-```
-✅ [Run build] [See: exit 0] "Build passes"
-❌ "Linter passed" (linter doesn't check compilation)
-```
-
-**Requirements:**
-```
-✅ Re-read plan → Create checklist → Verify each → Report gaps or completion
-❌ "Tests pass, phase complete"
-```
-
-**Agent delegation:**
-```
-✅ Agent reports success → Check VCS diff → Verify changes → Report actual state
-❌ Trust agent report
-```
-
-## Why This Matters
-
-From 24 failure memories:
-- your human partner said "I don't believe you" - trust broken
-- Undefined functions shipped - would crash
-- Missing requirements shipped - incomplete features
-- Time wasted on false completion → redirect → rework
-- Violates: "Honesty is a core value. If you lie, you'll be replaced."
-
-## When To Apply
-
-**ALWAYS before:**
-- ANY variation of success/completion claims
-- ANY expression of satisfaction
-- ANY positive statement about work state
-- Committing, PR creation, task completion
-- Moving to next task
-- Delegating to agents
-
-**Rule applies to:**
-- Exact phrases
-- Paraphrases and synonyms
-- Implications of success
-- ANY communication suggesting completion/correctness
-
-## The Bottom Line
-
-**No shortcuts for verification.**
-
-Run the command. Read the output. THEN claim the result.
-
-This is non-negotiable.
+- Check that the requested deliverable exists and the intentional diff matches the scope.
+- For a bugfix, establish the relevant failure/reproduction and evidence that it is resolved when testing is authorized.
+- Report what was actually checked and any remaining limitation. A subagent's completion message is not proof of the work product; inspect its evidence and changed artifacts.
+- When the user explicitly excludes tests or a check cannot run, state that it was not run. Do not substitute another test runner, fabricate success, or silently mark an unverified gate passed.
+- A commit or draft PR can preserve work with disclosed limitations when authorized; do not call it tested or release-ready without the required evidence.

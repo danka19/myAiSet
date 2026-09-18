@@ -1,15 +1,15 @@
 ---
 name: architecture-planner
-description: Plan or revise project architecture from current docs, implementation evidence, audit findings, and human decisions. Use when the user asks for architecture planning, module boundaries, data model choices, integration design, deployment shape, security boundaries, ADR-like decisions, or a technical plan before implementation.
+description: "Plan new or changed architecture, data contracts, service boundaries, or security decisions. Skip already accepted designs and routine implementation."
 ---
 
 # Architecture Planner
 
-Use this skill before implementation when architecture decisions can affect product behavior, data contracts, persistence, security, integrations, deployment, or long-term maintainability.
+Use for an unresolved architecture decision or a requested architecture plan. Reuse accepted designs during ordinary implementation; do not repeat architecture review solely because a task touches existing boundaries.
 
 ## Workflow
 
-1. Read the required project docs from `AGENTS.md`.
+1. Read applicable project rules and only the documents relevant to the architectural decision.
 2. Search existing code, tests, and docs for related concepts.
 3. Identify raw facts, accepted human decisions, open decisions, constraints, and risks.
 4. Propose the smallest architecture that supports the next validated workflow.

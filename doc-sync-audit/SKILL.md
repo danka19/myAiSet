@@ -1,6 +1,6 @@
 ---
 name: doc-sync-audit
-description: Verify that project documentation still matches reality — roadmap status, audit file, file structure doc, and entry-point files against actual code, tests, branches, and git state. Use when the user asks to audit a project, check doc drift, refresh CURRENT_PROJECT_AUDIT, or before starting a new phase after a long gap.
+description: "Audit project documentation against code and Git state when doc drift is suspected or a documentation audit is requested."
 ---
 
 # Doc Sync Audit
